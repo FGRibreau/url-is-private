@@ -1,6 +1,5 @@
 'use strict';
 var hostname = require('hostname-is-private');
-var Url = require('url');
 var _ = require('lodash');
 var TolerantUrl = require('tolerant');
 
