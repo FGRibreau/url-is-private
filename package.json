@@ -1,7 +1,7 @@
 {
   "name": "url-is-private",
   "version": "1.0.0",
-  "description": "Check whether or not an url refer to a private IP",
+  "description": "Check whether or not a url hostname refers to a private IP",
   "main": "url-is-private.js",
   "scripts": {
     "test": "mocha url-is-private.test.js"
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/FGRibreau/url-is-private",
   "dependencies": {
-    "hostname-is-private": "^2.0.0"
+    "hostname-is-private": "2.*.*"
   },
   "devDependencies": {
     "chai": "^2.2.0",

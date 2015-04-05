@@ -1,7 +1,6 @@
 # url-is-private [![Build Status](https://drone.io/github.com/FGRibreau/url-is-private/status.png)](https://drone.io/github.com/FGRibreau/url-is-private/latest)
 
-
-> Check whether or not an url hostname refers to a private IP
+> Check whether or not a url hostname refers to a private IP
 
 ## Setup
 
@@ -10,7 +9,7 @@ npm install url-is-private
 ```
 
 <p align="center">
-<a target="_blank" href="https://play.spotify.com/track/5vrwlyErg2E1bnDVLH5GhH"><img style="width:100%" src="https://cloud.githubusercontent.com/assets/138050/6993821/c4e023a6-db01-11e4-85aa-840078efe431.gif"></a>
+<a target="_blank" href="https://play.spotify.com/track/1HDLnDrZSxZ2Rb1yq9nZKK"><img style="width:100%" src="https://cloud.githubusercontent.com/assets/138050/6997063/7e747d58-dbac-11e4-8295-b2082f05697a.gif"></a>
 </p>
 
 ## Usage
@@ -42,17 +41,17 @@ isPrivateIncludingPublicIp('YOUR-PUBLIC-IP.xip.io', function(err, isPrivate){
     console.log(err === null, isPrivate == true);
 });
 
-isPrivate('localhost', function(err, isPrivate){
+isPrivate('http://ok:ok@localhost.xip.io:293/', function(err, isPrivate){
     console.log(err === null, isPrivate === true);
 });
 
-isPrivate('google.com', function(err, isPrivate){
+isPrivate('http://google.com/', function(err, isPrivate){
     console.log(err === null, isPrivate === false);
 });
 ```
 
 ## How it works
 
-It uses [dns.resolve](https://nodejs.org/api/all.html#all_dns_resolve_hostname_rrtype_callback) underneath and [ip.isPrivate](https://github.com/indutny/node-ip#ip) to check if the resolved IP is private (or not).
+url-is-private uses [hostname-is-private](https://github.com/FGRibreau/hostname-is-private) underneath.
 
 ## [Changelog](/CHANGELOG.md)
