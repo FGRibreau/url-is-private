@@ -28,7 +28,7 @@ describe('isPrivate', function () {
   ['http://127.0.0.1.xip.io',
     'aaaa://127.0.0.1.xip.io',
     'dbcontent.cloudapp.net',
-    'aaaa://127.0.0.1:6379:6379',
+    'aaaa://127.0.0.1.xip.io:6379:6379',
     'myprotocol://auth@127.0.0.1.xip.io'
   ].forEach(function (url) {
     it('should consider ' + url + ' private', shouldBePrivate(url));
