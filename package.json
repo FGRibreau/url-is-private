@@ -1,6 +1,6 @@
 {
   "name": "url-is-private",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Check whether or not a url hostname refers to a private IP",
   "main": "url-is-private.js",
   "scripts": {
