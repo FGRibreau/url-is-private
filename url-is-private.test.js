@@ -11,22 +11,29 @@ var isPrivateIncludingPublicIp = require('./').isPrivateIncludingPublicIp;
 var isPrivateMatcherFactory = _.curry(function (isPrivate, shouldBe, url, done) {
   isPrivate(url, function (err, isPrivate) {
     t.strictEqual(err, null);
-    t.strictEqual(isPrivate, true);
+    t.strictEqual(isPrivate, shouldBe);
     done();
   });
 });
 
-var shouldBePrivate = isPrivateMatcherFactory(isPrivate, true);
-var shouldNotBePrivate = isPrivateMatcherFactory(isPrivate, false);
 
-var shouldBePrivateIncludingIp = isPrivateMatcherFactory(isPrivate, true);
-var shouldNotBePrivateIncludingIp = isPrivateMatcherFactory(isPrivate, false);
+
+var shouldBePrivate = curry1(isPrivateMatcherFactory(isPrivate, true));
+var shouldNotBePrivate = curry1(isPrivateMatcherFactory(isPrivate, false));
+
+var shouldBePrivateIncludingIp = curry1(isPrivateMatcherFactory(isPrivate, true));
+var shouldNotBePrivateIncludingIp = curry1(isPrivateMatcherFactory(isPrivate, false));
 
 var PRIVATE_URL = ['http://127.0.0.1.xip.io',
   'aaaa://127.0.0.1.xip.io',
   'dbcontent.cloudapp.net',
   'aaaa://127.0.0.1.xip.io:6379:6379',
-  'myprotocol://auth@127.0.0.1.xip.io'
+  'myprotocol://auth@127.0.0.1.xip.io',
+  'myprotocol://auth@127.0.0.1',
+  'myprotocol://127.0.0.1',
+
+  // without protocol
+  '127.0.0.1'
 ];
 
 var PUBLIC_URL = [
@@ -138,3 +145,12 @@ describe('.isPrivateIncludingPublicIp', function () {
     it('should not consider ' + url + ' private', shouldNotBePrivateIncludingIp(url));
   });
 });
+
+function curry1(f) {
+  return function (a) {
+    return function (b) {
+      var args = [a].concat(Array.prototype.slice.call(arguments));
+      f.apply(null, args);
+    };
+  };
+}
