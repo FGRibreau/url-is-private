@@ -2,6 +2,7 @@
 var hostname = require('hostname-is-private');
 var Url = require('url');
 var _ = require('lodash');
+var TolerantUrl = require('tolerant');
 
 var ERRORS = {
   INVALID_HOSTNAME: new Error('Invalid hostname'),
@@ -13,12 +14,9 @@ var isPrivateFactory = _.curry(function (isPrivate, url, f) {
     return setImmediate(f, ERRORS.INVALID_INPUT);
   }
 
-  url = _cleanURL(url);
-
-
   var _url;
   try {
-    _url = Url.parse(_cleanURL(url), false, false);
+    _url = TolerantUrl.parse(url);
   } catch (err) {
     return setImmediate(f, err);
   }
@@ -33,50 +31,5 @@ var isPrivateFactory = _.curry(function (isPrivate, url, f) {
 module.exports = {
   errors: ERRORS,
   isPrivate: isPrivateFactory(hostname.isPrivate),
-  isPrivateIncludingPublicIp: isPrivateFactory(hostname.isPrivateIncludingPublicIp),
-
-  // Exposed helpers
-  getAuthPart: getAuthPart
+  isPrivateIncludingPublicIp: isPrivateFactory(hostname.isPrivateIncludingPublicIp)
 };
-
-
-/////////////
-// Helpers //
-/////////////
-
-/**
- * Clean URL
- *   - trim it
- *   - remove weird auth part that url.parse does not support
- *   - ensure a protocol is set otherwise url.parse will throw
- * @param  {String} url
- * @return {String} cleaned url
- */
-function _cleanURL(url) {
-  return _removeAuthPart(_ensureString(url));
-}
-
-function _ensureString(url) {
-  return (url || '').toString().trim();
-}
-
-function _removeAuthPart(url) {
-  var withProtocol = _ensureProtocol(url);
-  return withProtocol.replace(_getAuthPart(withProtocol) + '@', '');
-}
-
-function _ensureProtocol(url) {
-  if (url.indexOf('://') === -1) {
-    url = 'protocol://' + url;
-  }
-  return url;
-}
-
-function _getAuthPart(urlwithProtocol) {
-  var right = _.tail(urlwithProtocol.split('//')).join('//');
-  return right.substring(0, right.lastIndexOf('@'));
-}
-
-function getAuthPart(url) {
-  return _getAuthPart(_ensureProtocol(_ensureString(url)));
-}

@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/FGRibreau/url-is-private",
   "dependencies": {
-    "hostname-is-private": "2.*.*"
+    "hostname-is-private": "2.*.*",
+    "tolerant": "1.*.*"
   },
   "devDependencies": {
     "chai": "^2.2.0",

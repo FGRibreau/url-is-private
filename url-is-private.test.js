@@ -7,8 +7,6 @@ var _ = require('lodash');
 var errors = require('./').errors;
 var isPrivate = require('./').isPrivate;
 var isPrivateIncludingPublicIp = require('./').isPrivateIncludingPublicIp;
-var getAuthPart = require('./').getAuthPart;
-
 
 var isPrivateMatcherFactory = _.curry(function (isPrivate, shouldBe, url, done) {
   isPrivate(url, function (err, isPrivate) {
@@ -138,13 +136,5 @@ describe('.isPrivateIncludingPublicIp', function () {
 
   PUBLIC_URL.forEach(function (url) {
     it('should not consider ' + url + ' private', shouldNotBePrivateIncludingIp(url));
-  });
-});
-
-describe('.getAuthPart', function () {
-  _.zip(PUBLIC_URL, PUBLIC_URL_AUTH_PART).forEach(function (pair) {
-    it('should return "' + pair[1] + '" the auth part of ' + pair[0], function () {
-      t.strictEqual(getAuthPart(pair[0]), pair[1]);
-    });
   });
 });
