@@ -46,7 +46,7 @@ function _cleanURL(url) {
 }
 
 function _removeAuthPart(url) {
-  var withProtocol = _ensureProtocol(url)
+  var withProtocol = _ensureProtocol(url);
   return withProtocol.replace(_getAuthPart(withProtocol) + '@', '');
 }
 
