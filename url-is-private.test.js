@@ -5,9 +5,9 @@ var publicIp = require('public-ip');
 var errors = require('./').errors;
 var isPrivate = require('./').isPrivate;
 var isPrivateIncludingPublicIp = require('./').isPrivateIncludingPublicIp;
+var _ = require('lodash');
 
-
-var shouldBePrivate = curry1(function (url, done) {
+var isPrivateMatcherFactory = _.curry(function (isPrivate, shouldBe, url, done) {
   isPrivate(url, function (err, isPrivate) {
     t.strictEqual(err, null);
     t.strictEqual(isPrivate, true);
@@ -15,23 +15,48 @@ var shouldBePrivate = curry1(function (url, done) {
   });
 });
 
-var shouldNotBePrivate = curry1(function (url, done) {
-  isPrivate(url, function (err, isPrivate) {
-    t.strictEqual(err, null);
-    t.strictEqual(isPrivate, false);
-    done();
-  });
-});
+var shouldBePrivate = isPrivateMatcherFactory(isPrivate, true);
+var shouldNotBePrivate = isPrivateMatcherFactory(isPrivate, false);
 
+var shouldBePrivateIncludingIp = isPrivateMatcherFactory(isPrivate, true);
+var shouldNotBePrivateIncludingIp = isPrivateMatcherFactory(isPrivate, false);
+
+var PRIVATE_URL = ['http://127.0.0.1.xip.io',
+  'aaaa://127.0.0.1.xip.io',
+  'dbcontent.cloudapp.net',
+  'aaaa://127.0.0.1.xip.io:6379:6379',
+  'myprotocol://auth@127.0.0.1.xip.io'
+];
+
+var PUBLIC_URL = [
+  'redis://redisgreen.net',
+  'redis://xdr5%RDX@google.com:20000',
+  'redis://aaa5%AAA@google.com:200000',
+  'redis://sdsd@node-2bcdf15671b4b4806.openredis.com:10000',
+  'redis://sd:sdssd:sd//:sodksodk@node-2bcdf15671b4b4806.openredis.com:10256',
+  'redis://sd:sdssd:sd:sodksodk@google.com',
+  'redis://sd:sdssd:sd//:sodksodk@google.com',
+  'redis://aaa:@aa@redsmin.com',
+  'aaa://redislabs.com/aaa',
+  'aaa://openredis.com/aass',
+  'aaa://8.8.8.8.xip.io:293/qsd',
+
+  // without protocol
+  'plop@node-2bcdf15671b4b4806.openredis.com:11111',
+  'psodk@koi.redistogo.com:1111/',
+  'psodk@google.com:1111/',
+
+  // without protocol and space
+  ' aaaaa:aaaa@koi.redistogo.com:1111/'
+];
 
 describe('isPrivate', function () {
-  ['http://127.0.0.1.xip.io',
-    'aaaa://127.0.0.1.xip.io',
-    'dbcontent.cloudapp.net',
-    'aaaa://127.0.0.1.xip.io:6379:6379',
-    'myprotocol://auth@127.0.0.1.xip.io'
-  ].forEach(function (url) {
+  PRIVATE_URL.forEach(function (url) {
     it('should consider ' + url + ' private', shouldBePrivate(url));
+  });
+
+  PUBLIC_URL.forEach(function (url) {
+    it('should not consider ' + url + ' private', shouldNotBePrivate(url));
   });
 
   ['redis://::1:6379'].forEach(function (url) {
@@ -42,30 +67,6 @@ describe('isPrivate', function () {
         done();
       });
     });
-  });
-
-  [
-    'redis://redisgreen.net',
-    'redis://xdr5%RDX@google.com:20000',
-    'redis://aaa5%AAA@google.com:200000',
-    'redis://sdsd@node-2bcdf15671b4b4806.openredis.com:10000',
-    'redis://sd:sdssd:sd//:sodksodk@node-2bcdf15671b4b4806.openredis.com:10256',
-    'redis://sd:sdssd:sd:sodksodk@google.com',
-    'redis://sd:sdssd:sd//:sodksodk@google.com',
-    'redis://aaa:@aa@redsmin.com',
-    'aaa://redislabs.com/aaa',
-    'aaa://openredis.com/aass',
-    'aaa://8.8.8.8.xip.io:293/qsd',
-
-    // without protocol
-    'plop@node-2bcdf15671b4b4806.openredis.com:11111',
-    'psodk@koi.redistogo.com:1111/',
-    'psodk@google.com:1111/',
-
-    // without protocol and space
-    ' aaaaa:aaaa@koi.redistogo.com:1111/'
-  ].forEach(function (url) {
-    it('should not consider ' + url + ' private', shouldNotBePrivate(url));
   });
 });
 
@@ -81,14 +82,12 @@ describe('.isPrivateIncludingPublicIp', function () {
       });
     });
   });
+
+  PRIVATE_URL.forEach(function (url) {
+    it('should consider ' + url + ' private', shouldBePrivateIncludingIp(url));
+  });
+
+  PUBLIC_URL.forEach(function (url) {
+    it('should not consider ' + url + ' private', shouldNotBePrivateIncludingIp(url));
+  });
 });
-
-
-function curry1(f) {
-  return function (a) {
-    return function (b) {
-      var args = [a].concat(Array.prototype.slice.call(arguments));
-      f.apply(null, args);
-    };
-  };
-}
