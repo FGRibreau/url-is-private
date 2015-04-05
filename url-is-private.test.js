@@ -72,6 +72,20 @@ var PUBLIC_URL_AUTH_PART = [
 ];
 
 describe('isPrivate', function () {
+  it('should handle invalid empty string input', function (done) {
+    isPrivate('', function (err, isPrivate) {
+      t.strictEqual(err, errors.INVALID_INPUT);
+      done();
+    });
+  });
+
+  it('should handle invalid falsy input', function (done) {
+    isPrivate(null, function (err, isPrivate) {
+      t.strictEqual(err, errors.INVALID_INPUT);
+      done();
+    });
+  });
+
   PRIVATE_URL.forEach(function (url) {
     it('should consider ' + url + ' private', shouldBePrivate(url));
   });
@@ -93,6 +107,20 @@ describe('isPrivate', function () {
 
 
 describe('.isPrivateIncludingPublicIp', function () {
+  it('should handle invalid empty string input', function (done) {
+    isPrivateIncludingPublicIp('', function (err, isPrivate) {
+      t.strictEqual(err, errors.INVALID_INPUT);
+      done();
+    });
+  });
+
+  it('should handle invalid falsy input', function (done) {
+    isPrivateIncludingPublicIp(null, function (err, isPrivate) {
+      t.strictEqual(err, errors.INVALID_INPUT);
+      done();
+    });
+  });
+
   it('should consider specified public IP as private too', function (done) {
     publicIp(function (err, ip) {
       t.strictEqual(err, null);

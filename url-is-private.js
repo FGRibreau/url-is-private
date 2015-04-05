@@ -4,10 +4,18 @@ var Url = require('url');
 var _ = require('lodash');
 
 var ERRORS = {
-  INVALID_HOSTNAME: new Error('Invalid hostname')
+  INVALID_HOSTNAME: new Error('Invalid hostname'),
+  INVALID_INPUT: new Error('Invalid url'),
 };
 
 var isPrivateFactory = _.curry(function (isPrivate, url, f) {
+  if (!url) {
+    return setImmediate(f, ERRORS.INVALID_INPUT);
+  }
+
+  url = _cleanURL(url);
+
+
   var _url;
   try {
     _url = Url.parse(_cleanURL(url), false, false);
