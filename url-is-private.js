@@ -25,7 +25,10 @@ var isPrivateFactory = _.curry(function (isPrivate, url, f) {
 module.exports = {
   errors: ERRORS,
   isPrivate: isPrivateFactory(hostname.isPrivate),
-  isPrivateIncludingPublicIp: isPrivateFactory(hostname.isPrivateIncludingPublicIp)
+  isPrivateIncludingPublicIp: isPrivateFactory(hostname.isPrivateIncludingPublicIp),
+
+  // Exposed helpers
+  getAuthPart: getAuthPart
 };
 
 
@@ -42,7 +45,11 @@ module.exports = {
  * @return {String} cleaned url
  */
 function _cleanURL(url) {
-  return _removeAuthPart((url || '').toString().trim());
+  return _removeAuthPart(_ensureString(url));
+}
+
+function _ensureString(url) {
+  return (url || '').toString().trim();
 }
 
 function _removeAuthPart(url) {
@@ -60,4 +67,8 @@ function _ensureProtocol(url) {
 function _getAuthPart(urlwithProtocol) {
   var right = _.tail(urlwithProtocol.split('//')).join('//');
   return right.substring(0, right.lastIndexOf('@'));
+}
+
+function getAuthPart(url) {
+  return _getAuthPart(_ensureProtocol(_ensureString(url)));
 }

@@ -2,10 +2,13 @@
 
 var t = require('chai').assert;
 var publicIp = require('public-ip');
+var _ = require('lodash');
+
 var errors = require('./').errors;
 var isPrivate = require('./').isPrivate;
 var isPrivateIncludingPublicIp = require('./').isPrivateIncludingPublicIp;
-var _ = require('lodash');
+var getAuthPart = require('./').getAuthPart;
+
 
 var isPrivateMatcherFactory = _.curry(function (isPrivate, shouldBe, url, done) {
   isPrivate(url, function (err, isPrivate) {
@@ -50,6 +53,24 @@ var PUBLIC_URL = [
   ' aaaaa:aaaa@koi.redistogo.com:1111/'
 ];
 
+var PUBLIC_URL_AUTH_PART = [
+  "",
+  "xdr5%RDX",
+  "aaa5%AAA",
+  "sdsd",
+  "sd:sdssd:sd//:sodksodk",
+  "sd:sdssd:sd:sodksodk",
+  "sd:sdssd:sd//:sodksodk",
+  "aaa:@aa",
+  "",
+  "",
+  "",
+  "plop",
+  "psodk",
+  "psodk",
+  "aaaaa:aaaa"
+];
+
 describe('isPrivate', function () {
   PRIVATE_URL.forEach(function (url) {
     it('should consider ' + url + ' private', shouldBePrivate(url));
@@ -89,5 +110,13 @@ describe('.isPrivateIncludingPublicIp', function () {
 
   PUBLIC_URL.forEach(function (url) {
     it('should not consider ' + url + ' private', shouldNotBePrivateIncludingIp(url));
+  });
+});
+
+describe('.getAuthPart', function () {
+  _.zip(PUBLIC_URL, PUBLIC_URL_AUTH_PART).forEach(function (pair) {
+    it('should return "' + pair[1] + '" the auth part of ' + pair[0], function () {
+      t.strictEqual(getAuthPart(pair[0]), pair[1]);
+    });
   });
 });
